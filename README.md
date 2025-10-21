@@ -35,6 +35,16 @@ This comprehensive guide covers:
 - Legal, ethical, and privacy considerations
 - Production-ready code examples
 
+**[API vs Web Scraping Comparison](./API_VS_SCRAPING_COMPARISON.md)**
+
+Detailed comparison showing why you should use the API:
+- Side-by-side feature comparison
+- Code examples for both approaches
+- Legal and technical considerations
+- Performance and reliability comparison
+- Real-world examples using r/AmItheAsshole
+- Python module recommendations
+
 ## Quick Start
 
 ### Using Reddit API (Recommended)

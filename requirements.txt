@@ -1,6 +1,10 @@
 # Reddit Data Collection Dependencies
 
-# Reddit API
+# ============================================================================
+# RECOMMENDED: Reddit API (Official and Legal)
+# ============================================================================
+
+# Reddit API - ALWAYS USE THIS
 praw>=7.7.0
 
 # Sentiment Analysis
@@ -20,3 +24,16 @@ requests>=2.31.0
 
 # Utilities
 python-dateutil>=2.8.2
+
+# ============================================================================
+# NOT RECOMMENDED: Web Scraping (Violates Reddit ToS)
+# ============================================================================
+# The following are included ONLY for the educational comparison demo
+# DO NOT use these for actual Reddit data collection
+
+# Web scraping (for comparison demo only - NOT for production use)
+beautifulsoup4>=4.12.0  # For demo_api_vs_scraping.py comparison only
+lxml>=4.9.0  # HTML parser for BeautifulSoup
+
+# Note: Web scraping Reddit violates their Terms of Service
+# Always use PRAW (Reddit's official API) for production applications
