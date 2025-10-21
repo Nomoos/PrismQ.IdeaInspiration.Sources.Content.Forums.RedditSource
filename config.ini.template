@@ -1,0 +1,39 @@
+# Reddit API Configuration Template
+# 
+# Copy this file to config.ini and fill in your credentials
+# NEVER commit config.ini to version control!
+
+[reddit]
+# Get these credentials from https://www.reddit.com/prefs/apps
+client_id = YOUR_CLIENT_ID_HERE
+client_secret = YOUR_CLIENT_SECRET_HERE
+user_agent = YourApp/1.0 by /u/yourusername
+
+# Optional: For write operations (posting, commenting)
+# Leave blank if you only need read access
+username = 
+password = 
+
+[collection]
+# Default collection settings
+default_limit = 100
+max_retries = 3
+request_timeout = 30
+
+[rate_limiting]
+# Rate limiting settings (requests per minute)
+# Reddit allows 60 req/min for authenticated, 10 for unauthenticated
+max_requests_per_minute = 60
+time_window_seconds = 60
+
+[storage]
+# Data storage settings
+cache_enabled = true
+cache_ttl_seconds = 3600
+database_path = ./data/reddit_data.db
+
+[analysis]
+# Analysis settings
+sentiment_enabled = true
+topic_extraction_enabled = true
+min_engagement_score = 5
