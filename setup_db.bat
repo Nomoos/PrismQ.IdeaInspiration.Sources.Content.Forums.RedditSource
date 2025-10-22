@@ -1,0 +1,153 @@
+@echo off
+REM PrismQ.IdeaInspiration.Sources.Content.Forums.RedditSource - Database Setup Script
+REM This script creates db.s3db in the user's working directory and sets up the RedditSource table
+REM Target: Windows primary
+
+setlocal enabledelayedexpansion
+
+echo ============================================================
+echo PrismQ Reddit Source - Database Setup
+echo ============================================================
+echo.
+
+REM Store the repository root (where this script is located)
+set "SCRIPT_DIR=%~dp0"
+cd /d "%SCRIPT_DIR%"
+
+REM Set default Python executable
+set "PYTHON_EXEC=python"
+
+REM Check if Python executable exists
+%PYTHON_EXEC% --version >nul 2>&1
+if errorlevel 1 (
+    echo.
+    echo [ERROR] Python executable '%PYTHON_EXEC%' not found or not working.
+    echo.
+    set /p "PYTHON_INPUT=Please enter the Python executable path (e.g., python, python3, C:\Python310\python.exe): "
+    
+    REM Update the user's input
+    set "PYTHON_EXEC=!PYTHON_INPUT!"
+    
+    REM Test again
+    !PYTHON_EXEC! --version >nul 2>&1
+    if errorlevel 1 (
+        echo [ERROR] Python executable '!PYTHON_EXEC!' still not working.
+        echo [ERROR] Please install Python 3.8 or higher and try again.
+        pause
+        exit /b 1
+    )
+)
+
+echo [INFO] Using Python: %PYTHON_EXEC%
+%PYTHON_EXEC% --version
+echo.
+
+REM Find the nearest parent directory with "PrismQ" in its name
+set "PRISMQ_DIR="
+set "SEARCH_DIR=%CD%"
+
+:search_prismq
+REM Check if current search directory contains "PrismQ" in its name
+echo %SEARCH_DIR% | findstr /i "PrismQ" >nul
+if not errorlevel 1 (
+    set "PRISMQ_DIR=%SEARCH_DIR%"
+    goto found_prismq
+)
+
+REM Move to parent directory
+for %%i in ("%SEARCH_DIR%\..") do set "PARENT_DIR=%%~fi"
+
+REM Check if we've reached the root (parent is same as current)
+if "%SEARCH_DIR%"=="%PARENT_DIR%" goto no_prismq_found
+
+REM Continue searching in parent
+set "SEARCH_DIR=%PARENT_DIR%"
+goto search_prismq
+
+:no_prismq_found
+REM No PrismQ directory found, use current directory as fallback
+set "USER_WORK_DIR=%CD%"
+echo [INFO] No PrismQ directory found in path. Using current directory as working directory.
+goto setup_db_path
+
+:found_prismq
+REM Found PrismQ directory, create working directory with _WD suffix
+for %%i in ("%PRISMQ_DIR%") do set "PRISMQ_NAME=%%~nxi"
+for %%i in ("%PRISMQ_DIR%\..") do set "PRISMQ_PARENT=%%~fi"
+set "USER_WORK_DIR=%PRISMQ_PARENT%\%PRISMQ_NAME%_WD"
+
+echo [INFO] Found PrismQ directory: %PRISMQ_DIR%
+echo [INFO] Working directory (with _WD suffix): %USER_WORK_DIR%
+
+:setup_db_path
+echo.
+
+REM Database path (fixed to db.s3db)
+set "DB_PATH=db.s3db"
+
+REM Create working directory if it doesn't exist
+if not exist "%USER_WORK_DIR%" (
+    echo [INFO] Creating working directory: %USER_WORK_DIR%
+    mkdir "%USER_WORK_DIR%"
+)
+
+REM Create the full database path
+set "FULL_DB_PATH=%USER_WORK_DIR%\%DB_PATH%"
+echo [INFO] Database will be created at: %FULL_DB_PATH%
+echo.
+
+REM Check if Python dependencies are installed
+echo [INFO] Checking Python dependencies...
+%PYTHON_EXEC% -c "import sqlalchemy" >nul 2>&1
+if errorlevel 1 (
+    echo [WARNING] SQLAlchemy not found. Installing dependencies...
+    %PYTHON_EXEC% -m pip install -r requirements.txt
+    if errorlevel 1 (
+        echo [ERROR] Failed to install dependencies.
+        echo [ERROR] Please install dependencies manually: pip install -r requirements.txt
+        pause
+        exit /b 1
+    )
+)
+
+REM Use the init_db.py script to create the database
+echo [INFO] Creating database and RedditSource table...
+%PYTHON_EXEC% scripts\init_db.py --db-path "%FULL_DB_PATH%"
+
+if errorlevel 1 (
+    echo.
+    echo [ERROR] Failed to create database or table.
+    pause
+    exit /b 1
+)
+
+echo.
+echo ============================================================
+echo Setup Complete!
+echo ============================================================
+echo.
+echo Database Location: %FULL_DB_PATH%
+echo Table Created: RedditSource
+echo.
+echo Table Schema:
+echo   - id: INTEGER PRIMARY KEY AUTOINCREMENT
+echo   - source: VARCHAR(100) NOT NULL (indexed)
+echo   - source_id: VARCHAR(255) NOT NULL (indexed)
+echo   - title: TEXT NOT NULL
+echo   - description: TEXT
+echo   - tags: TEXT (comma-separated)
+echo   - score: FLOAT
+echo   - score_dictionary: TEXT (JSON object with score components)
+echo   - processed: BOOLEAN DEFAULT FALSE (indexed)
+echo   - created_at: TIMESTAMP
+echo   - updated_at: TIMESTAMP
+echo.
+echo Indexes:
+echo   - UNIQUE(source, source_id)
+echo   - INDEX(score)
+echo   - INDEX(created_at)
+echo   - INDEX(processed)
+echo.
+echo You can now use this database with PrismQ Reddit Source.
+echo.
+pause
