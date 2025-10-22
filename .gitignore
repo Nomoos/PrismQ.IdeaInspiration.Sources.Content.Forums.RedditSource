@@ -38,6 +38,7 @@ logs/
 
 # Cache
 .cache/
+.pytest_cache/
 *.pkl
 *.pickle
 
@@ -46,6 +47,7 @@ logs/
 *.json
 *.sqlite
 *.db
+*.s3db
 
 # OS
 .DS_Store
