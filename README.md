@@ -22,11 +22,18 @@ This source captures the following data from Reddit:
 
 ## Implementation Guide
 
-For detailed best practices, implementation guidelines, and code examples, see:
+**[How to Load Data from Reddit API](./HOW_TO_LOAD_DATA.md)** ⭐ START HERE
+
+Quick answers to common questions:
+- Is Reddit API free? (Yes!)
+- How to load data (5-minute setup)
+- What data do you get (60+ fields per post)
+- Rate limits and costs (60 req/min, free)
+- Complete working examples
 
 **[Reddit Scraping Best Practices](./REDDIT_SCRAPING_BEST_PRACTICES.md)**
 
-This comprehensive guide covers:
+Comprehensive guide covering:
 - Reddit API authentication and rate limiting
 - Data extraction patterns and pagination
 - Post and comment collection strategies
